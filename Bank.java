@@ -42,10 +42,12 @@ class Account{
     String accountnumber;
     int customerid;
     double balance;
+    ArrayList<Transaction> transactions;
     public Account(String accountnumber,int customerid,double balance){
         this.accountnumber = accountnumber;
         this.customerid = customerid;
         this.balance = balance;
+        this.transactions = new ArrayList<>();
     }
     String getaccountnumber(){
         return accountnumber;
@@ -134,7 +136,8 @@ class BankSystem{
         accounts.add(a);
         c.accounts.add(a);
         if(initialDeposit > 0) {
-            transactions.add(new Transaction(nextTransactionId++, accNo, initialDeposit, "Deposit"));
+            a.transactions.add(new Transaction(nextTransactionId++, accNo, initialDeposit, "Deposit"));
+            transactions.add(new Transaction(nextTransactionId - 1, accNo, initialDeposit, "Deposit"));
         }
         return true;
     }
@@ -143,7 +146,8 @@ class BankSystem{
         Account a = findAccountByNumber(accNo);
         if(a == null) return false;
         a.deposit(amount);
-        transactions.add(new Transaction(nextTransactionId++, accNo, amount, "Deposit"));
+        a.transactions.add(new Transaction(nextTransactionId++, accNo, amount, "Deposit"));
+        transactions.add(new Transaction(nextTransactionId - 1, accNo, amount, "Deposit"));
         return true;
     }
 
@@ -152,7 +156,8 @@ class BankSystem{
         if(a == null) return false;
         if(a.getbalance() < amount) return false;
         a.withdraw(amount);
-        transactions.add(new Transaction(nextTransactionId++, accNo, amount, "Withdraw"));
+        a.transactions.add(new Transaction(nextTransactionId++, accNo, amount, "Withdraw"));
+        transactions.add(new Transaction(nextTransactionId - 1, accNo, amount, "Withdraw"));
         return true;
     }
 
@@ -176,6 +181,34 @@ class BankSystem{
             System.out.println("---");
         }
     }
+
+    public void showCustomerAccountSummary(int customerId){
+        Customer c = findCustomerById(customerId);
+        if(c == null){
+            System.out.println("Customer not found.");
+            return;
+        }
+
+        System.out.println("Customer: " + c.getCustomerName() + " (ID: " + c.getCustomerId() + ")");
+        if(c.accounts.isEmpty()){
+            System.out.println("No accounts found for this customer.");
+            return;
+        }
+
+        for(Account a: c.accounts){
+            System.out.println("Account number: " + a.getaccountnumber());
+            System.out.println("Balance: " + a.getbalance());
+            System.out.println("Transactions:");
+            if(a.transactions.isEmpty()){
+                System.out.println("  No transactions yet.");
+            } else {
+                for(Transaction t: a.transactions){
+                    System.out.println("  - " + t.type + " : " + t.amount + " on " + t.date);
+                }
+            }
+            System.out.println("---");
+        }
+    }
 }
 
 public class Bank{
@@ -192,7 +225,8 @@ public class Bank{
             System.out.println("5. List customers");
             System.out.println("6. List accounts");
             System.out.println("7. List transactions");
-            System.out.println("8. Exit");
+            System.out.println("8. Show customer account summary");
+            System.out.println("9. Exit");
             System.out.print("Choose an option: ");
             String opt = sc.nextLine().trim();
             switch(opt){
@@ -264,6 +298,15 @@ public class Bank{
                     bank.showAllTransactions();
                     break;
                 case "8":
+                    try{
+                        System.out.print("Customer id: ");
+                        int summaryId = Integer.parseInt(sc.nextLine().trim());
+                        bank.showCustomerAccountSummary(summaryId);
+                    } catch(NumberFormatException e){
+                        System.out.println("Invalid customer id.");
+                    }
+                    break;
+                case "9":
                     running = false;
                     break;
                 default:
