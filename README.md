@@ -35,12 +35,13 @@ This repository contains a collection of Java projects designed to demonstrate c
 
 ## ▶️ How to Run
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/java-projects.git
-   
-##2.Navigate the project:
+   git clone https://github.com/your-username/java-projects.git. 
+2.Navigate the project:
 -cd java-projects.
-##3.Compile the project:
+3.Compile the project:
 -javac ProjectName.java.
-##4.Run the program:
+4.Run the program:
 -java ProjectName.
+Repository Clone Link :
+ ```bash
+   git clone https://github.com/your-username/java-projects.git
